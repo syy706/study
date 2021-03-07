@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body>
+	</body>
+	<script>
+		
+		Function.prototype.myCall = function(objThis, ...args){
+			if(objThis == null || objThis == undefined){
+				objThis = window;
+			};
+			let fnName = Symbol('anything');
+			objThis[fnName] = this;
+			let result = objThis[fnName](...args);
+			delete result ;
+			return result;
+		}
+		
+		Function.prototype.myApply = function(objThis, args){
+			if(objThis == null || objThis == undefined){
+				objThis = window;
+			}
+			const fnName = Symbol('anything');
+			objThis[fnName] = this;
+			let result = objThis[fnName](...args)
+			delete objThis[fnName];
+			return result 
+		}
+		
+		Function.prototype.myBind = function(objThis, ...args){
+			let fnThis = this;
+			let resultFn = function(...args1){
+				const isAddNew = this instanceof resultFn
+				const  newThis = isAddNew ? this : objThis;
+				return fnThis.myCall(newThis, ...args, ...args1);
+			}
+			resultFn.prototype = Object.create(fnThis.prototype);
+			return resultFn
+			
+		}
+		
+		
+		let obj = {
+			name:'objName',
+			say:function(){
+				console.log(this.name)
+			}
+		}
+		
+		let obj2 = {
+			name:'obj2Name'
+		}
+		
+		let fn = obj.say.myBind(obj2);
+		fn()
+		
+		// let fn1 = obj.say.myBind(obj2);
+		
+		
+		
+	</script>
+</html>
